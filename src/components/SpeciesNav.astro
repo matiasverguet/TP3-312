@@ -1,35 +1,24 @@
 ---
-import { speciesColors } from '../data/speciesColors';
-
 const species = [
-  { name: 'Adelie', label: 'Adélie', color: speciesColors.Adelie },
-  { name: 'Chinstrap', label: 'Chinstrap', color: speciesColors.Chinstrap },
-  { name: 'Gentoo', label: 'Gentoo', color: speciesColors.Gentoo },
+  { name: 'Adelie', label: 'Adélie' },
+  { name: 'Chinstrap', label: 'Chinstrap' },
+  { name: 'Gentoo', label: 'Gentoo' },
 ];
-
-const currentPath = Astro.url.pathname.replace(/\/$/, '');
 ---
 
-<nav class="species-nav" aria-label="Choisir une espèce">
-  <span class="species-nav__label">Espèce affichée</span>
-  <div class="species-nav__options">
-    {species.map(({ name, label, color }) => {
-      const href = `/species/${name}`;
-      const isActive = currentPath === href;
+<label for="species">Choisir une espèce</label>
+<select id="species">
+  {species.map(({ name, label }) => (
+    <option value={`${name}/`}>{label}</option>
+  ))}
+</select>
 
-      return (
-        <a
-          href={href}
-          class:list={{ 'species-nav__option': true, 'species-nav__option--active': isActive }}
-          style={`--species-color: ${color}; border-color: ${color}; ${isActive ? `background-color: ${color}; color: ${name === 'Chinstrap' ? '#172033' : '#ffffff'}` : `color: ${color}`}`}
-          aria-current={isActive ? 'page' : undefined}
-        >
-          {label}
-        </a>
-      );
-    })}
-  </div>
-</nav>
+<script>
+  document.querySelector('#species')?.addEventListener('change', (evt) => {
+    const value = (evt.target as HTMLSelectElement).value;
+    location.pathname = `/species/${value}`;
+  });
+</script>
 
 <style>
   .species-nav {
