@@ -5,7 +5,19 @@ interface Props {
 }
 
 const { title, description = "Visualisation de données des manchots avec Observable Plot et Astro" } = Astro.props;
-const pathname = Astro.url.pathname;
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+const pages = [
+  { href: '/', label: 'Accueil' },
+  { href: '/species', label: 'Espèces' },
+  { href: '/species-tabs', label: 'Espèces avec onglets' },
+  { href: '/species/Adelie', label: 'Adélie' },
+  { href: '/species/Chinstrap', label: 'Chinstrap' },
+  { href: '/species/Gentoo', label: 'Gentoo' },
+  { href: '/morphologie', label: 'Morphologie' },
+  { href: '/demographie', label: 'Démographie' },
+  { href: '/requins', label: 'Requins' },
+  { href: '/baleines', label: 'Baleines' }
+];
 ---
 
 <html lang="fr">
@@ -55,22 +67,15 @@ const pathname = Astro.url.pathname;
         text-decoration: none;
         font-size: 1.1rem;
       }
-      .nav-links {
-        list-style: none;
-        display: flex;
-        gap: 1.5rem;
-        margin: 0;
-        padding: 0;
-      }
-      .nav-links a {
-        text-decoration: none;
-        color: #64748b;
-        font-weight: 500;
-        transition: color 0.2s;
-      }
-      .nav-links a:hover,
-      .nav-links a.active {
-        color: var(--primary);
+      .site-select {
+        min-width: 13rem;
+        padding: 0.6rem 2rem 0.6rem 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--card-bg);
+        color: var(--text-color);
+        font: inherit;
+        font-weight: 600;
       }
       main {
         max-width: 960px;
@@ -112,14 +117,14 @@ const pathname = Astro.url.pathname;
     <header>
       <nav aria-label="Navigation principale">
         <a href="/" class="logo">🐧 Palmer DataViz</a>
-        <ul class="nav-links">
-          <li><a href="/" class={pathname === "/" ? "active" : ""}>Accueil</a></li>
-          <li><a href="/species" class={pathname === "/species" ? "active" : ""}>Espèces</a></li>
-          <li><a href="/morphologie" class={pathname === "/morphologie" ? "active" : ""}>Morphologie</a></li>
-          <li><a href="/demographie" class={pathname === "/demographie" ? "active" : ""}>Démographie</a></li>
-          <li><a href="/requins" class={pathname === "/requins" ? "active" : ""}>Requins</a></li>
-          <li><a href="/baleines" class={pathname === "/baleines" ? "active" : ""}>Baleines</a></li>
-        </ul>
+        <label for="site-navigation" class="sr-only">Aller vers une page</label>
+        <select id="site-navigation" class="site-select">
+          {pages.map((page) => (
+            <option value={page.href === '/' ? '/' : `${page.href}/`} selected={pathname === page.href}>
+              {page.label}
+            </option>
+          ))}
+        </select>
       </nav>
     </header>
 
@@ -132,3 +137,10 @@ const pathname = Astro.url.pathname;
     </footer>
   </body>
 </html>
+
+<script>
+  document.querySelector('#site-navigation')?.addEventListener('change', (event) => {
+    const value = (event.target as HTMLSelectElement).value;
+    location.pathname = value;
+  });
+</script>
